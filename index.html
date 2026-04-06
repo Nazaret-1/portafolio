@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tu Nombre — Arquitecto</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --black:#0a0a0a;--white:#fafafa;--g1:#f0f0f0;--g2:#c8c8c8;--g3:#7a7a7a;--g4:#3a3a3a;
+      --ink:#1a1a1a;--line:rgba(0,0,0,.1);
+      --fd:"Didact Gothic","Gill Sans","Optima",Georgia,serif;
+      --fb:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
+      --fm:"Courier New",Courier,monospace;
+      --expo:cubic-bezier(.16,1,.3,1);
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{background:var(--white);color:var(--ink);font-family:var(--fb);line-height:1.7;overflow-x:hidden}
+    ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--white)}::-webkit-scrollbar-thumb{background:var(--g2)}
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;justify-content:space-between;align-items:center;padding:1.5rem 4rem;background:rgba(250,250,250,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);transition:padding .4s var(--expo)}
+    nav.compact{padding:1rem 4rem}
+    .nav-logo{font-family:var(--fd);font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:var(--black);text-decoration:none}
+    .nav-links{display:flex;gap:2.5rem;list-style:none}
+    .nav-links a{font-family:var(--fd);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--g3);text-decoration:none;position:relative;transition:color .3s}
+    .nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--black);transition:width .4s var(--expo)}
+    .nav-links a:hover{color:var(--black)}.nav-links a:hover::after{width:100%}
+
+    /* ── HERO ────────────────────────────────────────────── */
+    #inicio{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 4rem 8rem;position:relative;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 80% 20%,rgba(0,0,0,.03) 0%,transparent 70%)}
+    .hero-number{font-family:var(--fm);font-size:.7rem;letter-spacing:.3em;color:var(--g2);margin-bottom:2rem;opacity:0;transform:translateY(10px);animation:fadeUp .8s var(--expo) .2s forwards}
+    .hero-name{font-family:var(--fd);font-size:clamp(3.5rem,10vw,9rem);font-weight:400;line-height:.95;letter-spacing:-.02em;color:var(--black);margin-bottom:2rem;opacity:0;transform:translateY(30px);animation:fadeUp 1s var(--expo) .4s forwards}
+    .hero-role{display:flex;align-items:center;gap:1rem;margin-bottom:4rem;opacity:0;transform:translateY(20px);animation:fadeUp .9s var(--expo) .6s forwards}
+    .hero-role-line{width:40px;height:1px;background:var(--g2)}
+    .hero-role-text{font-family:var(--fd);font-size:.8rem;letter-spacing:.3em;text-transform:uppercase;color:var(--g3)}
+    .hero-tagline{max-width:520px;font-size:1.15rem;line-height:1.6;color:var(--g4);font-style:italic;border-left:1px solid var(--g2);padding-left:1.5rem;opacity:0;transform:translateY(20px);animation:fadeUp .9s var(--expo) .8s forwards}
+    .hero-scroll{position:absolute;bottom:3rem;right:4rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;animation:fadeIn 1s var(--expo) 1.4s forwards}
+    .hero-scroll span{font-family:var(--fm);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--g2);writing-mode:vertical-rl}
+    .scroll-line{width:1px;height:60px;background:linear-gradient(to bottom,var(--g2),transparent);animation:scrollPulse 2s ease-in-out infinite 2s}
+
+    /* ── SECTIONS ────────────────────────────────────────── */
+    section{padding:8rem 4rem}
+    .section-header{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:4rem}
+    .section-number{font-family:var(--fm);font-size:.65rem;letter-spacing:.2em;color:var(--g2);flex-shrink:0}
+    .section-title{font-family:var(--fd);font-size:clamp(2rem,5vw,4rem);font-weight:400;letter-spacing:-.02em;color:var(--black);line-height:1}
+    .section-divider{flex:1;height:1px;background:var(--line);margin-left:1rem}
+
+    /* ── SOBRE MÍ ────────────────────────────────────────── */
+    #sobre-mi{background:var(--black);color:var(--white)}
+    #sobre-mi .section-title{color:var(--white)}
+    #sobre-mi .section-number{color:var(--g4)}
+    #sobre-mi .section-divider{background:rgba(255,255,255,.08)}
+    .about-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:8rem;align-items:start}
+    .about-label{font-family:var(--fm);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--g3);margin-bottom:2rem}
+    .about-tags{display:flex;flex-direction:column;gap:.75rem}
+    .about-tag{display:inline-flex;align-items:center;gap:.75rem;font-family:var(--fd);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--g2)}
+    .about-tag::before{content:'';width:20px;height:1px;background:var(--g4)}
+    .about-text{font-size:1.1rem;line-height:1.85;color:rgba(250,250,250,.7)}
+    .about-text p+p{margin-top:1.25rem}
+    .about-highlight{color:var(--white);font-style:italic}
+
+    /* ── PROJECT CARDS ───────────────────────────────────── */
+    #proyectos{background:var(--g1)}
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+    .project-card{background:var(--white);padding:4rem 2rem;display:flex;flex-direction:column;position:relative;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .project-card::before{content:'';position:absolute;inset:0;background:var(--black);transform:translateY(101%);transition:transform .55s var(--expo);z-index:0;will-change:transform}
+    .project-card:hover::before{transform:translateY(0)}
+    .project-card>*{position:relative;z-index:1}
+    .project-num{font-family:var(--fm);font-size:.6rem;letter-spacing:.3em;color:var(--g2);margin-bottom:4rem;transition:color .35s .05s}
+    .project-card:hover .project-num{color:var(--g4)}
+    .project-title{font-family:var(--fd);font-size:1.5rem;font-weight:400;letter-spacing:-.01em;color:var(--black);margin-bottom:1rem;line-height:1.2;transition:color .35s .05s}
+    .project-card:hover .project-title{color:var(--white)}
+    .project-desc{font-size:.9rem;color:var(--g3);line-height:1.65;flex:1;margin-bottom:2rem;transition:color .35s .05s}
+    .project-card:hover .project-desc{color:rgba(250,250,250,.5)}
+    .card-cta{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--fd);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--g3);transition:color .35s .05s;user-select:none}
+    .card-cta svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:1.5;transition:transform .3s var(--expo)}
+    .project-card:hover .card-cta{color:rgba(250,250,250,.35)}
+    .project-card:hover .card-cta svg{transform:rotate(45deg)}
+
+    /* ── CONTACTO ────────────────────────────────────────── */
+    #contacto{min-height:60vh;display:flex;flex-direction:column;justify-content:center}
+    .contact-inner{max-width:700px}
+    .contact-subtitle{font-family:var(--fd);font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--g3);margin-bottom:2rem}
+    .contact-cta{font-family:var(--fd);font-size:clamp(2rem,5vw,4.5rem);font-weight:400;letter-spacing:-.02em;color:var(--black);line-height:1.1;margin-bottom:4rem}
+    .contact-email{display:inline-flex;align-items:center;gap:1rem;font-family:var(--fd);font-size:1rem;letter-spacing:.05em;color:var(--black);text-decoration:none;border-bottom:1px solid var(--g2);padding-bottom:.25rem;transition:border-color .3s,gap .3s var(--expo)}
+    .contact-email:hover{border-color:var(--black);gap:1.5rem}
+    .contact-email svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.5}
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer{padding:2rem 4rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+    footer p{font-family:var(--fm);font-size:.65rem;letter-spacing:.15em;color:var(--g2)}
+
+    /* ── MUSEUM MODAL ────────────────────────────────────── */
+    .museum-overlay{
+      position:fixed;inset:0;z-index:500;
+      background:rgba(6,6,6,.65);
+      backdrop-filter:blur(28px) saturate(.45);
+      -webkit-backdrop-filter:blur(28px) saturate(.45);
+      opacity:0;pointer-events:none;
+      transition:opacity .45s var(--expo);
+      display:flex;align-items:center;justify-content:center;
+      padding:1.5rem;
+    }
+    .museum-overlay.open{opacity:1;pointer-events:all}
+    .museum-panel{
+      background:rgba(246,246,246,.96);
+      border:1px solid rgba(180,180,180,.35);
+      width:100%;max-width:980px;
+      max-height:90vh;
+      display:grid;grid-template-columns:1.15fr 1fr;
+      transform:translateY(44px) scale(.965);
+      transition:transform .6s var(--expo);
+      overflow:hidden;
+    }
+    .museum-overlay.open .museum-panel{transform:translateY(0) scale(1)}
+
+    /* ── CAROUSEL ────────────────────────────────────────── */
+    .carousel{
+      position:relative;
+      min-height:520px;
+      background:#ddd;
+      overflow:hidden;
+      user-select:none;
+    }
+    /* track: slides side by side */
+    .car-track{
+      display:flex;
+      height:100%;
+      will-change:transform;
+      transition:transform .42s cubic-bezier(.4,0,.2,1);
+    }
+    .car-track.no-transition{transition:none}
+    .car-slide{
+      flex:0 0 100%;
+      height:100%;
+      position:relative;
+      background:#e0e0e0;
+    }
+    .car-slide img{
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .car-slide .ph{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:.75rem;
+    }
+    .car-slide .ph svg{opacity:.15}
+    .car-slide .ph span{font-family:var(--fm);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(0,0,0,.28)}
+
+    /* veil gradient */
+    .car-veil{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.06) 0%,transparent 55%,rgba(0,0,0,.16) 100%);pointer-events:none;z-index:2}
+
+    /* arrows */
+    .car-btn{
+      position:absolute;top:50%;z-index:4;
+      transform:translateY(-50%);
+      width:38px;height:38px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(250,250,250,.82);
+      border:1px solid rgba(255,255,255,.5);
+      backdrop-filter:blur(8px);
+      cursor:pointer;
+      transition:background .2s,opacity .2s;
+      opacity:.75;
+    }
+    .car-btn:hover{background:rgba(250,250,250,.97);opacity:1}
+    .car-btn svg{width:13px;height:13px;stroke:var(--black);fill:none;stroke-width:1.8;flex-shrink:0}
+    .car-btn.prev{left:1rem}
+    .car-btn.next{right:1rem}
+
+    /* dots */
+    .car-dots{
+      position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);
+      z-index:4;display:flex;gap:.4rem;align-items:center;
+    }
+    .car-dot{
+      width:5px;height:5px;border-radius:50%;
+      background:rgba(255,255,255,.45);
+      cursor:pointer;
+      transition:background .25s,transform .25s;
+      flex-shrink:0;
+    }
+    .car-dot.active{background:rgba(255,255,255,.95);transform:scale(1.25)}
+
+    /* counter badge */
+    .car-counter{
+      position:absolute;top:1.25rem;left:1.25rem;z-index:4;
+      font-family:var(--fm);font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;
+      color:rgba(255,255,255,.72);
+      background:rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.15);
+      padding:.28rem .6rem;
+      backdrop-filter:blur(6px);
+    }
+
+    /* ── INFO SIDE ───────────────────────────────────────── */
+    .museum-info-side{display:flex;flex-direction:column;padding:3rem 2.5rem 2.5rem;overflow-y:auto;background:rgba(250,250,250,.98)}
+    .museum-eyebrow{font-family:var(--fm);font-size:.56rem;letter-spacing:.3em;text-transform:uppercase;color:var(--g2);margin-bottom:1.25rem}
+    .museum-h{font-family:var(--fd);font-size:1.85rem;font-weight:400;letter-spacing:-.02em;color:var(--black);line-height:1.1;margin-bottom:1.5rem}
+    .museum-rule{width:28px;height:1px;background:var(--g2);margin-bottom:1.5rem}
+    .museum-cat{font-family:var(--fm);font-size:.54rem;letter-spacing:.25em;text-transform:uppercase;color:var(--g2);margin-bottom:.6rem}
+    .museum-body{font-size:.9rem;line-height:1.82;color:var(--g4);flex:1}
+    .museum-specs{margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(0,0,0,.07);display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+    .museum-spec-lbl{font-family:var(--fm);font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--g2);margin-bottom:.2rem}
+    .museum-spec-val{font-family:var(--fd);font-size:.82rem;color:var(--ink)}
+    .museum-actions{display:flex;align-items:center;gap:.75rem;margin-top:2rem}
+    .btn-pdf-main{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:.55rem;font-family:var(--fd);font-size:.67rem;letter-spacing:.22em;text-transform:uppercase;color:var(--white);background:var(--black);text-decoration:none;padding:.9rem 1.2rem;border:1px solid var(--black);transition:background .25s}
+    .btn-pdf-main:hover{background:var(--g4);border-color:var(--g4)}
+    .btn-pdf-main svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5}
+    .btn-close-modal{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,.12);background:transparent;cursor:pointer;transition:background .2s}
+    .btn-close-modal:hover{background:var(--g1)}
+    .btn-close-modal svg{width:14px;height:14px;stroke:var(--g3);fill:none;stroke-width:1.5}
+
+    /* ── REVEAL ──────────────────────────────────────────── */
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s var(--expo),transform .9s var(--expo)}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}
+    .reveal-delay-3{transition-delay:.3s}.reveal-delay-4{transition-delay:.4s}
+    .reveal-delay-5{transition-delay:.5s}
+
+    @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{to{opacity:1}}
+    @keyframes scrollPulse{0%,100%{opacity:1;transform:scaleY(1)}50%{opacity:.3;transform:scaleY(.6)}}
+
+    @media(max-width:900px){
+      nav{padding:1.2rem 2rem}nav.compact{padding:.8rem 2rem}
+      #inicio{padding:0 2rem 6rem}section{padding:6rem 2rem}
+      .about-grid{grid-template-columns:1fr;gap:3rem}
+      footer{padding:2rem}
+      .museum-panel{grid-template-columns:1fr;max-height:96vh;overflow-y:auto}
+      .carousel{min-height:260px}
+      .museum-info-side{padding:2rem 1.5rem;overflow-y:visible}
+    }
+    @media(max-width:600px){
+      .nav-links{display:none}
+      .projects-grid{grid-template-columns:1fr}
+      .museum-specs{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#inicio" class="nav-logo">PORTAFOLIO</a>
+  <ul class="nav-links">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#sobre-mi">Sobre mí</a></li>
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="inicio">
+  <div class="hero-bg"></div>
+  <div class="hero-number">— Portafolio&nbsp;&nbsp;/&nbsp;&nbsp;2025</div>
+  <h1 class="hero-name">Imma Nazaret<br>Sanchez Rivera</h1>
+  <div class="hero-role">
+    <div class="hero-role-line"></div>
+    <span class="hero-role-text">Arquitecto</span>
+  </div>
+  <p class="hero-tagline">"Aprendo rápido y convierto ideas<br>en proyectos reales."</p>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- SOBRE MÍ -->
+<section id="sobre-mi">
+  <div class="section-header reveal">
+    <span class="section-number">01</span>
+    <h2 class="section-title">Sobre mí</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="about-grid">
+    <div class="reveal reveal-delay-1">
+      <p class="about-label">Disciplinas</p>
+      <div class="about-tags">
+        <span class="about-tag">Arquitectura</span>
+        <span class="about-tag">Diseño Urbano</span>
+        <span class="about-tag">Diseño Sostenible</span>
+        <span class="about-tag">Gestión de Proyectos</span>
+        <span class="about-tag">Fotomontaje & Collage </span>
+      </div>
+    </div>
+    <div class="about-text reveal reveal-delay-2">
+      <p>Soy arquitecta con una profunda convicción de que el espacio construido transforma la vida de las personas. Mi trabajo nace de la <span class="about-highlight">observación rigurosa del entorno</span> y de una voluntad constante de ir más allá de lo evidente.</p>
+      <p>Me muevo con facilidad entre la escala urbana y el detalle constructivo, siempre buscando la coherencia entre forma, función y emoción. <span class="about-highlight">Aprendo rápido</span> —cada proyecto es una oportunidad de dominar nuevas herramientas, normativas y contextos culturales sin perder el hilo creativo.</p>
+      <p>Creo en el proceso colaborativo, en los bocetos a mano y en las iteraciones. Cada idea merece ser explorada hasta encontrar la versión que realmente vale la pena construir.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROYECTOS -->
+<section id="proyectos">
+  <div class="section-header reveal">
+    <span class="section-number">02</span>
+    <h2 class="section-title">Proyectos</h2>
+    <div class="section-divider"></div>
+  </div>
+  <div class="projects-grid">
+
+    <!-- Proyecto 01 — 10 imágenes -->
+    <article class="project-card reveal reveal-delay-1"
+      data-title="La Joya"
+      data-num="01" data-year="2024"
+      data-typology="Recorrido Gastronómico"
+      data-location="Avenida Insurgentes Sur, Metrobús La Joya"
+      data-area="5384.71m²" data-status="Proyecto"
+      data-desc="La Joya | Integración Social y Arquitectónica
+        Este complejo gastronómico transforma la transición entre la avenida y las calles adyacentes en una experiencia fluida y accesible. La propuesta destaca por su configuración técnica de techos inclinados que protegen del clima mientras enriquecen el recorrido visual. El programa arquitectónico alberga locales, quioscos y un área de cuidado infantil, priorizando la seguridad de las familias de los locatarios y optimizando el flujo hacia el Metrobús La Joya."
+      data-images='["imagenes/1.png","imagenes/2.png","imagenes/3.png","imagenes/4.png","imagenes/5.png","imagenes/6.png","imagenes/7.png","imagenes/8.png","imagenes/9.png"]'
+      data-pdf="pdfs/proyecto-1.pdf">
+      <span class="project-num">Proyecto / 01</span>
+      <h3 class="project-title">Recorrido Gastronómico</h3>
+      <h2 class="project-title">La Joya</h2>
+      <p class="project-desc">La Joya | Integración Social y Arquitectónica
+        Este complejo gastronómico transforma la transición entre la avenida y las calles adyacentes en una experiencia fluida y accesible. La propuesta destaca por su configuración técnica de techos inclinados que protegen del clima mientras enriquecen el recorrido visual. El programa arquitectónico alberga locales, quioscos y un área de cuidado infantil, priorizando la seguridad de las familias de los locatarios y optimizando el flujo hacia el Metrobús La Joya.</p>
+      <span class="card-cta">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Ver proyecto
+      </span>
+    </article>
+
+    <!-- Proyecto 02 — 10 imágenes -->
+    <article class="project-card reveal reveal-delay-2"
+      data-title="Plaza Cívica Central"
+      data-num="02" data-year="2023"
+      data-typology="Espacio Público"
+      data-location="Centro histórico"
+      data-area="3.200 m²" data-status="Construido"
+      data-desc="Intervención urbana de recuperación del espacio público en el corazón del centro histórico. El proyecto propone pavimentos permeables que gestionan aguas lluvias, vegetación nativa de bajo mantenimiento y mobiliario urbano con materiales reciclados. El resultado es una plaza viva que devuelve la escala humana a un entorno históricamente fragmentado."
+      data-images='["imagenes/p2-01.jpg","imagenes/p2-02.jpg","imagenes/p2-03.jpg","imagenes/p2-04.jpg","imagenes/p2-05.jpg","imagenes/p2-06.jpg","imagenes/p2-07.jpg","imagenes/p2-08.jpg","imagenes/p2-09.jpg","imagenes/p2-10.jpg"]'
+      data-pdf="pdfs/proyecto-2.pdf">
+      <span class="project-num">Proyecto / 02</span>
+      <h3 class="project-title">Plaza Cívica Central</h3>
+      <p class="project-desc">Intervención urbana de 3.200 m² en el centro histórico. Recuperación del espacio público mediante pavimentos permeables, vegetación nativa y mobiliario de bajo mantenimiento.</p>
+      <span class="card-cta">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Ver proyecto
+      </span>
+    </article>
+
+    <!-- Proyecto 03 — 10 imágenes -->
+    <article class="project-card reveal reveal-delay-3"
+      data-title="Biblioteca Comunitaria"
+      data-num="03" data-year="2023"
+      data-typology="Equipamiento Cultural"
+      data-location="Zona periurbana"
+      data-area="1.450 m²" data-status="En construcción"
+      data-desc="Equipamiento cultural diseñado para una comunidad periurbana. La propuesta organiza sus espacios alrededor de un patio central descubierto que actúa como corazón social y regulador climático. Las aulas, la sala de lectura y el auditorio flexible se abren a este vacío interior, favoreciendo la luz natural difusa y la ventilación cruzada durante todo el año."
+      data-images='["imagenes/p3-01.jpg","imagenes/p3-02.jpg","imagenes/p3-03.jpg","imagenes/p3-04.jpg","imagenes/p3-05.jpg","imagenes/p3-06.jpg","imagenes/p3-07.jpg","imagenes/p3-08.jpg","imagenes/p3-09.jpg","imagenes/p3-10.jpg"]'
+      data-pdf="pdfs/proyecto-3.pdf">
+      <span class="project-num">Proyecto / 03</span>
+      <h3 class="project-title">Biblioteca Comunitaria</h3>
+      <p class="project-desc">Equipamiento cultural en contexto periurbano organizado alrededor de un patio central como corazón social, favoreciendo la luz natural y la flexibilidad de uso.</p>
+      <span class="card-cta">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Ver proyecto
+      </span>
+    </article>
+
+    <!-- Proyecto 04 — 5 imágenes -->
+    <article class="project-card reveal reveal-delay-4"
+      data-title="Torre Mixta Norte"
+      data-num="04" data-year="2022"
+      data-typology="Uso Mixto"
+      data-location="Área urbana consolidada"
+      data-area="12.800 m²" data-status="Construido"
+      data-desc="Edificio de uso mixto de 18 plantas que integra oficinas en niveles bajos y vivienda en los superiores, con comercio en planta baja que activa el espacio urbano. La fachada ventilada con celosía de aluminio de geometría variable controla la ganancia solar según orientación y genera una identidad visual reconocible en el skyline."
+      data-images='["imagenes/p4-01.jpg","imagenes/p4-02.jpg","imagenes/p4-03.jpg","imagenes/p4-04.jpg","imagenes/p4-05.jpg"]'
+      data-pdf="pdfs/proyecto-4.pdf">
+      <span class="project-num">Proyecto / 04</span>
+      <h3 class="project-title">Torre Mixta Norte</h3>
+      <p class="project-desc">Edificio de uso mixto de 18 plantas con fachada ventilada de celosía de aluminio que controla la ganancia solar y genera una identidad urbana reconocible.</p>
+      <span class="card-cta">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Ver proyecto
+      </span>
+    </article>
+
+    <!-- Proyecto 05 — 5 imágenes -->
+    <article class="project-card reveal reveal-delay-5"
+      data-title="Refugio de Montaña"
+      data-num="05" data-year="2024"
+      data-typology="Arquitectura de Paisaje"
+      data-location="Ecosistema de páramo"
+      data-area="95 m²" data-status="Construido"
+      data-desc="Pequeña infraestructura de alojamiento concebida para el ecosistema de páramo de alta montaña. Construida íntegramente en madera laminada estructural con cubierta verde extensiva, busca una huella de carbono mínima y máxima integración sensorial con el paisaje. Propone un diálogo entre tecnología constructiva contemporánea y sabiduría constructiva vernácula de la región."
+      data-images='["imagenes/p5-01.jpg","imagenes/p5-02.jpg","imagenes/p5-03.jpg","imagenes/p5-04.jpg","imagenes/p5-05.jpg"]'
+      data-pdf="pdfs/proyecto-5.pdf">
+      <span class="project-num">Proyecto / 05</span>
+      <h3 class="project-title">Refugio de Montaña</h3>
+      <p class="project-desc">Pequeña infraestructura en ecosistema de páramo construida en madera laminada con cubierta verde. Huella mínima y máxima integración con el paisaje.</p>
+      <span class="card-cta">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        Ver proyecto
+      </span>
+    </article>
+
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto">
+  <div class="contact-inner">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Contacto</h2>
+      <div class="section-divider"></div>
+    </div>
+    <p class="contact-subtitle reveal reveal-delay-1">¿Tienes un proyecto en mente?</p>
+    <p class="contact-cta reveal reveal-delay-2">Hablemos y<br>construyámoslo<br>juntos.</p>
+    <a href="mailto:tu@email.com" class="contact-email reveal reveal-delay-3">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      tu@email.com
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Tu Nombre — Arquitecto</p>
+  <p>Diseño minimalista · Hecho a mano</p>
+</footer>
+
+<!-- MUSEUM MODAL -->
+<div class="museum-overlay" id="museumOverlay" role="dialog" aria-modal="true" aria-label="Detalle del proyecto">
+  <div class="museum-panel">
+
+    <!-- LEFT: carousel -->
+    <div class="carousel" id="carousel">
+      <div class="car-track" id="carTrack"></div>
+      <div class="car-veil"></div>
+      <span class="car-counter" id="carCounter">1 / 1</span>
+
+      <button class="car-btn prev" id="carPrev" aria-label="Imagen anterior">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="car-btn next" id="carNext" aria-label="Imagen siguiente">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+
+      <div class="car-dots" id="carDots"></div>
+    </div>
+
+    <!-- RIGHT: info -->
+    <div class="museum-info-side">
+      <p class="museum-eyebrow" id="mEyebrow"></p>
+      <h2 class="museum-h" id="mTitle"></h2>
+      <div class="museum-rule"></div>
+      <p class="museum-cat">Memoria descriptiva</p>
+      <p class="museum-body" id="mBody"></p>
+      <div class="museum-specs">
+        <div><p class="museum-spec-lbl">Tipología</p><p class="museum-spec-val" id="sTypology"></p></div>
+        <div><p class="museum-spec-lbl">Ubicación</p><p class="museum-spec-val" id="sLocation"></p></div>
+        <div><p class="museum-spec-lbl">Área</p><p class="museum-spec-val" id="sArea"></p></div>
+        <div><p class="museum-spec-lbl">Estado</p><p class="museum-spec-val" id="sStatus"></p></div>
+      </div>
+      <div class="museum-actions">
+        <a id="mPdfLink" href="#" target="_blank" rel="noopener" class="btn-pdf-main">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Ver PDF completo
+        </a>
+        <button class="btn-close-modal" id="museumClose" aria-label="Cerrar">
+          <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── NAV COMPACT ───────────────────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('compact', window.scrollY > 60);
+}, { passive: true });
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────
+const revealEls = document.querySelectorAll('.reveal');
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revObs.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el => revObs.observe(el));
+
+// ── CAROUSEL STATE ────────────────────────────────────────────
+let images      = [];
+let current     = 0;
+let autoTimer   = null;
+const INTERVAL  = 4000; // ms between auto-advance
+
+const track     = document.getElementById('carTrack');
+const dotsWrap  = document.getElementById('carDots');
+const counter   = document.getElementById('carCounter');
+const btnPrev   = document.getElementById('carPrev');
+const btnNext   = document.getElementById('carNext');
+
+function placeholder(idx) {
+  return `<div class="ph">
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#000" stroke-width=".7">
+      <rect x="2" y="8" width="40" height="28" rx="1"/>
+      <circle cx="14" cy="19" r="4"/>
+      <path d="M2 30l12-9 9 7 7-5 12 9"/>
+    </svg>
+    <span>Imagen ${idx+1}</span>
+  </div>`;
+}
+
+function buildSlides(imgs) {
+  track.innerHTML = '';
+  dotsWrap.innerHTML = '';
+  images = imgs;
+  current = 0;
+
+  imgs.forEach((src, i) => {
+    const slide = document.createElement('div');
+    slide.className = 'car-slide';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `Imagen ${i + 1}`;
+    img.loading = 'lazy';
+    img.onerror = () => {
+      img.remove();
+      slide.innerHTML = placeholder(i);
+    };
+    slide.appendChild(img);
+    track.appendChild(slide);
+
+    const dot = document.createElement('button');
+    dot.className = 'car-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Ir a imagen ${i + 1}`);
+    dot.addEventListener('click', e => { e.stopPropagation(); goTo(i); resetAuto(); });
+    dotsWrap.appendChild(dot);
+  });
+
+  applyPos(false);
+  updateUI();
+}
+
+function applyPos(animate = true) {
+  if (!animate) track.classList.add('no-transition');
+  track.style.transform = `translateX(-${current * 100}%)`;
+  if (!animate) requestAnimationFrame(() => requestAnimationFrame(() => track.classList.remove('no-transition')));
+}
+
+function updateUI() {
+  counter.textContent = `${current + 1} / ${images.length}`;
+  dotsWrap.querySelectorAll('.car-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  btnPrev.style.opacity = images.length <= 1 ? '0' : '';
+  btnNext.style.opacity = images.length <= 1 ? '0' : '';
+}
+
+function goTo(idx) {
+  current = (idx + images.length) % images.length;
+  applyPos(true);
+  updateUI();
+}
+
+function startAuto() {
+  stopAuto();
+  if (images.length <= 1) return;
+  autoTimer = setInterval(() => { goTo(current + 1); }, INTERVAL);
+}
+
+function stopAuto() {
+  if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+}
+
+function resetAuto() { startAuto(); }
+
+btnPrev.addEventListener('click', e => { e.stopPropagation(); goTo(current - 1); resetAuto(); });
+btnNext.addEventListener('click', e => { e.stopPropagation(); goTo(current + 1); resetAuto(); });
+
+// touch / swipe
+let touchX = 0;
+const carousel = document.getElementById('carousel');
+carousel.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+carousel.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 40) { goTo(current + (dx < 0 ? 1 : -1)); resetAuto(); }
+}, { passive: true });
+
+// keyboard arrows while modal open
+document.addEventListener('keydown', e => {
+  if (!overlay.classList.contains('open')) return;
+  if (e.key === 'ArrowRight') { goTo(current + 1); resetAuto(); }
+  if (e.key === 'ArrowLeft')  { goTo(current - 1); resetAuto(); }
+  if (e.key === 'Escape') hideModal();
+});
+
+// ── MODAL ─────────────────────────────────────────────────────
+const overlay = document.getElementById('museumOverlay');
+
+function showModal(card) {
+  const d = card.dataset;
+
+  document.getElementById('mEyebrow').textContent  = `Proyecto ${d.num}  ·  ${d.year}`;
+  document.getElementById('mTitle').textContent    = d.title;
+  document.getElementById('mBody').textContent     = d.desc;
+  document.getElementById('sTypology').textContent = d.typology;
+  document.getElementById('sLocation').textContent = d.location;
+  document.getElementById('sArea').textContent     = d.area;
+  document.getElementById('sStatus').textContent   = d.status;
+  document.getElementById('mPdfLink').href         = d.pdf;
+
+  const imgs = JSON.parse(d.images || '[]');
+  buildSlides(imgs.length ? imgs : ['']);
+
+  document.body.style.overflow = 'hidden';
+  overlay.classList.add('open');
+  startAuto();
+}
+
+function hideModal() {
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+  stopAuto();
+}
+
+document.querySelectorAll('.project-card').forEach(card => {
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('role', 'button');
+  card.addEventListener('click', () => showModal(card));
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showModal(card); }
+  });
+});
+
+document.getElementById('museumClose').addEventListener('click', hideModal);
+overlay.addEventListener('click', e => { if (e.target === overlay) hideModal(); });
+</script>
+</body>
+</html>
